@@ -13,59 +13,24 @@ body {
 	padding: 25px;
 	margin: 35px;
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.6), 0 6px 20px 0 rgba(0, 0, 0, 0.6);
-  min-height: 100%;
+  //min-height: 100%;
   display: flex;
-  flex-direction: column;
-  > div {
-    // these are flex items
-    
-    // flex: 1; same as:
-    // flex-grow: 1;
-    // flex-shrink: 1;
-    // flex-basis: auto;
-    // flex: 1 1 auto;
-    flex: 1;
-    
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    > div {
-      // also flex items 
-    }
-  }
+  align-items: stretch;
 }
 
 #mainDiv {
-	
 }
 
-.some-area {
-  > div {
-    padding: 1rem;
-    &:nth-child(1) {
-      background: hsla(100, 50%, 60%, 1);
-    }
-    &:nth-child(2) {
-      background: hsla(200, 50%, 65%, 1);
-    }
-    &:nth-child(3) {
-      background: hsla(200, 50%, 70%, 1);
-    }
-    &:nth-child(4) {
-      background: hsla(200, 50%, 75%, 1);
-    }
-    &:nth-child(5) {
-      background: hsla(200, 50%, 80%, 1);
-    }
-    h1, h2 {
-      margin: 0 0 0.2rem 0;
-    }
-    p {
-      margin: 0;
-    }
-  }
-}
-
-html, body {
+html, body, #hundred {
   height: 100%;
+  display: flex;
+}
+
+.radarChart {
+	font-family: 'Open Sans', sans-serif;
+	font-size: 11px;
+	font-weight: 300;
+	text-align: center;
+	text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+	cursor: default;
 }
