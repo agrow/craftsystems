@@ -1,4 +1,4 @@
-@import "compass/css3";
+
 body {
     background-image: url("../media/brownTealTrellis.jpg");
     background-repeat: repeat;
@@ -33,4 +33,12 @@ html, body, #hundred {
 	text-align: center;
 	text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
 	cursor: default;
+}
+
+fieldset {
+	font-family: 'Open Sans', sans-serif;
+	font-size: 14px;
+	font-weight: 300;
+	
+	overflow-y: auto;
 }

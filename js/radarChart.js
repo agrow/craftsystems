@@ -7,7 +7,7 @@
 // Edited by April Grow
 // Found at http://bl.ocks.org/nbremer/21746a9668ffdf6d8242
 	
-function RadarChart(id, data, options) {
+function RadarChart(id, data, options, classNames) {
 	var cfg = {
 	 w: 600,				//Width of the circle
 	 h: 600,				//Height of the circle
@@ -152,15 +152,16 @@ function RadarChart(id, data, options) {
 	var blobWrapper = g.selectAll(".radarWrapper")
 		.data(data)
 		.enter().append("g")
-		.attr("class", "radarWrapper");
+		.attr("class", function(d,i) {return "radarWrapper " + classNames[i];} );
 			
 	//Append the backgrounds	
 	blobWrapper
 		.append("path")
-		.attr("class", "radarArea")
+		.attr("class", function(d,i) {return "radarArea " + classNames[i];} )
 		.attr("d", function(d,i) { return radarLine(d); })
 		.style("fill", function(d,i) { return cfg.color(i); })
 		.style("fill-opacity", cfg.opacityArea)
+		.style("opacity", 0)
 		.on('mouseover', function (d,i){
 			//Dim all blobs
 			d3.selectAll(".radarArea")
@@ -180,18 +181,19 @@ function RadarChart(id, data, options) {
 		
 	//Create the outlines	
 	blobWrapper.append("path")
-		.attr("class", "radarStroke")
+		.attr("class", function(d,i) {return "radarStroke " + classNames[i];} )
 		.attr("d", function(d,i) { return radarLine(d); })
 		.style("stroke-width", cfg.strokeWidth + "px")
 		.style("stroke", function(d,i) { return cfg.color(i); })
 		.style("fill", "none")
-		.style("filter" , "url(#glow)");		
+		.style("filter" , "url(#glow)")
+		.style("opacity", 0);		
 	
 	//Append the circles
 	blobWrapper.selectAll(".radarCircle")
 		.data(function(d,i) { return d; })
 		.enter().append("circle")
-		.attr("class", "radarCircle")
+		.attr("class", function(d,i) {return "radarCircle";}) // + classNames[i];} )
 		.attr("r", cfg.dotRadius)
 		.attr("cx", function(d,i){ return rScale(d.value) * Math.cos(angleSlice*i - Math.PI/2); })
 		.attr("cy", function(d,i){ return rScale(d.value) * Math.sin(angleSlice*i - Math.PI/2); })
@@ -206,7 +208,7 @@ function RadarChart(id, data, options) {
 	var blobCircleWrapper = g.selectAll(".radarCircleWrapper")
 		.data(data)
 		.enter().append("g")
-		.attr("class", "radarCircleWrapper");
+		.attr("class", function(d,i) {return "radarCircleWrapper " + classNames[i];} );
 		
 	//Append a set of invisible circles on top for the mouseover pop-up
 	blobCircleWrapper.selectAll(".radarInvisibleCircle")
