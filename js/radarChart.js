@@ -19,7 +19,7 @@ function RadarChart(id, data, options, classNames) {
 	 opacityArea: 0.35, 	//The opacity of the area of the blob
 	 dotRadius: 4, 			//The size of the colored circles of each blog
 	 opacityCircles: 0.1, 	//The opacity of the circles of each blob
-	 strokeWidth: 2, 		//The width of the stroke around each blob
+	 strokeWidth: 1, 		//The width of the stroke around each blob
 	 roundStrokes: false,	//If true the area and stroke will follow a round path (cardinal-closed)
 	 color: d3.schemeCategory10	//Color (not a function anymore)
 	};
@@ -161,7 +161,6 @@ function RadarChart(id, data, options, classNames) {
 		.attr("d", function(d,i) { return radarLine(d); })
 		.style("fill", function(d,i) { return cfg.color(i); })
 		.style("fill-opacity", cfg.opacityArea)
-		.style("opacity", 0)
 		.on('mouseover', function (d,i){
 			//Dim all blobs
 			d3.selectAll(".radarArea")
@@ -186,19 +185,37 @@ function RadarChart(id, data, options, classNames) {
 		.style("stroke-width", cfg.strokeWidth + "px")
 		.style("stroke", function(d,i) { return cfg.color(i); })
 		.style("fill", "none")
-		.style("filter" , "url(#glow)")
-		.style("opacity", 0);		
+		.style("filter" , "url(#glow)");		
+	
+	// !!!! BEWARE HARDCODING # of AXESSSSSS HACK HACK HACK !!!!
+	var parentIndexCounter = 0;
 	
 	//Append the circles
 	blobWrapper.selectAll(".radarCircle")
 		.data(function(d,i) { return d; })
 		.enter().append("circle")
-		.attr("class", function(d,i) {return "radarCircle";}) // + classNames[i];} )
+		
+		// !!!! BEWARE HARDCODING # of AXESSSSSS HACK HACK HACK !!!!
+		.attr("class", function(d, i) {
+			var className=classNames[parentIndexCounter]; 
+			if(i === 6) {
+				parentIndexCounter++;
+				if(parentIndexCounter === classNames.length) parentIndexCounter = 0;
+			} 
+			console.log(className); 
+			return "radarCircle " + className;} )
+		//.attr("class", function(d) {return "radarCircle";}) // + classNames[i];} )
 		.attr("r", cfg.dotRadius)
 		.attr("cx", function(d,i){ return rScale(d.value) * Math.cos(angleSlice*i - Math.PI/2); })
 		.attr("cy", function(d,i){ return rScale(d.value) * Math.sin(angleSlice*i - Math.PI/2); })
-		.style("fill", function(d,i,j) { return cfg.color(j); })
-		.style("fill-opacity", 0.8);
+		.style("fill", function(d,i) { 
+			var colorIndex=parentIndexCounter; 
+			if(i === 6) {
+				parentIndexCounter++;
+				if(parentIndexCounter === classNames.length) parentIndexCounter = 0;
+			}
+			return cfg.color(colorIndex); })
+		.style("fill-opacity", 0.9);
 
 	/////////////////////////////////////////////////////////
 	//////// Append invisible circles for tooltip ///////////
@@ -210,11 +227,17 @@ function RadarChart(id, data, options, classNames) {
 		.enter().append("g")
 		.attr("class", function(d,i) {return "radarCircleWrapper " + classNames[i];} );
 		
+	// !!!! BEWARE HARDCODING # of AXESSSSSS HACK HACK HACK !!!!
+	parentIndexCounter = 0;
+	// !!!! BEWARE HARDCODING # of AXESSSSSS HACK HACK HACK !!!!
+	
 	//Append a set of invisible circles on top for the mouseover pop-up
 	blobCircleWrapper.selectAll(".radarInvisibleCircle")
 		.data(function(d,i) { return d; })
 		.enter().append("circle")
-		.attr("class", "radarInvisibleCircle")
+		// !!!! BEWARE HARDCODING # of AXESSSSSS HACK HACK HACK !!!!
+		.attr("class", function(d, i) {var className=classNames[parentIndexCounter]; if(i === 6) {parentIndexCounter++;} return "radarInvisibleCircle " + className;} )
+		//.attr("class", function(d,i) {return "radarInvisibleCircle " + classNames[i];} )
 		.attr("r", cfg.dotRadius*1.5)
 		.attr("cx", function(d,i){ return rScale(d.value) * Math.cos(angleSlice*i - Math.PI/2); })
 		.attr("cy", function(d,i){ return rScale(d.value) * Math.sin(angleSlice*i - Math.PI/2); })
@@ -272,5 +295,12 @@ function RadarChart(id, data, options, classNames) {
 		}
 	  });
 	}//wrap	
+	
+	///////////// AND AT THE END //////////////
+	// Start the content off as invisile....
+	for(var i = 0; i < classNames.length; i++){
+		//console.log(d3.selectAll("." + classNames[i]));
+		d3.selectAll("." + classNames[i]).style("opacity", 0);
+	}
 	
 }//RadarChart
