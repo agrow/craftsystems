@@ -112,7 +112,7 @@ var parseData = function(tsvFile){
 			if(craftLib.lookupByGameName(d["Game Name"]).length > 1){
 				gameStored.gameCheckboxID = craftLib.lookupByGameName(d["Game Name"])[0].gameCheckboxID;
 			} else {
-				addCheckbox(gameStored['Game Name'], gameStored.id, "gameList");
+				addCheckbox(gameStored['Game Name'], gameStored.gameCheckboxID, "gameList");
 			}
 			//console.log(d);
 			//console.log(game);
@@ -185,7 +185,8 @@ var addCheckbox = function(name, id, parentID){
             showSystem(this.value);
         } else {
         	hideSystem(this.value);
-        }       
+        }
+        refreshCheckboxStatus();       
     });
 	
 };
@@ -201,6 +202,7 @@ var hideSystem = function(str){
 		console.log("Calling hide on " + systems[i].d3ClassName);
 		console.log(d3.selectAll("#" + systems[i].d3ClassName));
 		d3.selectAll("." + systems[i].d3ClassName).style("opacity", 0);
+		systems[i].visible = false;
 	}
 	
 };
@@ -215,6 +217,66 @@ var showSystem = function(str){
 		console.log("Calling show on " + systems[i].d3ClassName);
 		console.log(d3.selectAll("#" + systems[i].d3ClassName));
 		d3.selectAll("." + systems[i].d3ClassName).style("opacity", 1);
+		systems[i].visible = true;
+	}
+};
+
+var refreshCheckboxStatus = function(){
+	// Connects the different systems of checkboxes
+	// Such that if all the systems of DiabloIII are unchecked but the game is checked,
+	// uncheck it!
+	craftLib.eachGame(function(gameName, listOfSystems){
+		var allvisible = true;
+		var allhidden = true;
+		for(var i = 0; i < listOfSystems.length; i++){
+			// If any system in the list of systems is visible, then they cannot be hidden
+			if(listOfSystems[i].visible === true) {
+				//console.log("found visible system, all hidden false ");
+				allhidden = false;
+			}
+			// likewise, if any is NOT visible, then they cannot be all visible
+			else {
+				//console.log("found hidden system, all visible false");
+				allvisible = false;
+			}
+		}
+		//console.log("state of variables", allvisible, allhidden);
+		// If all systems in a group are visible, make sure all the checkboxes are checked
+		if(allvisible){
+			for(var i = 0; i < listOfSystems.length; i++){
+				// Check each system
+				//console.log("Checking each system...", listOfSystems[i].systemCheckboxID);
+				checkAndSetVisibility(listOfSystems[i].systemCheckboxID, false, true);
+			}
+			// Check the game
+			if(listOfSystems.length > 0){ 
+				//console.log("Checking THE GAME...", listOfSystems[0].gameCheckboxID);
+				checkAndSetVisibility(listOfSystems[0].gameCheckboxID, false, true);
+			}
+		}
+		
+		// Likewise, if all systems are hidden, make sure they are unchecked
+		if(allhidden){
+			for(var i = 0; i < listOfSystems.length; i++){
+				// Uncheck each system
+				checkAndSetVisibility(listOfSystems[i].systemCheckboxID, true, false);
+			}
+			// Uncheck the game
+			if(listOfSystems.length > 0){ 
+				checkAndSetVisibility(listOfSystems[0].gameCheckboxID, true, false);
+			}
+		}
+		
+	});
+};
+
+// If id's visibility is === to check, set visibility to (set)
+var checkAndSetVisibility = function(id, check, set){
+	//console.log("Check and set visibility...", id, check, set, $("#" + id).prop('checked'));
+	if($("#" + id).prop('checked') === check){
+		//console.log("Changing " + id + " checked property from " + check + " to " + set);
+		$("#" + id).prop('checked', set);
+		$("#" + id).checkboxradio( "refresh" );
 	}
 };
 

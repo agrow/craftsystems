@@ -3,11 +3,12 @@
 // and holding data on games we upload....
 // Probably should be a singleton...
 /////////////////////////////////////////////////////////////////
-var CraftSystemLibrary = function(incomingSystems, incomingGames){
+var CraftSystemLibrary = function(){
 	
-	this.systems = incomingSystems || {};
-	this.gamesByGameName = incomingGames || {};
+	this.systems = {};
+	this.gamesByGameName = {};
 	this.namesByID = [];
+	this.listOfGames = [];
 	this.idCount = 0;
 	
 };
@@ -27,6 +28,7 @@ CraftSystemLibrary.prototype.store = function(gameName, craftSystem, value){
 	
 	if(this.gamesByGameName[gameName] === undefined){
 		this.gamesByGameName[gameName] = [];
+		this.listOfGames.push(gameName);
 	}
 	
 	// ASSUMES THERE ARE NO DUPLICATE SYSTEMS!
@@ -88,21 +90,30 @@ CraftSystemLibrary.prototype.lookupByID = function(id){
 ///////////// Do some action to or by each system or each game ////////
 
 // e.g. gameLib.each(function(name, data){console.log(name, ": ", data)})
-// EXPECTED ACTION: function(name, data){}
+// EXPECTED "ACTION": function(name, data){}
 CraftSystemLibrary.prototype.eachSystem = function(action){
 	for(var prop in this.systems){
 		action(prop, this.systems[prop]);
 	}
 };
 
-// EXPECTED ACTION: function(name, data){}
-CraftSystemLibrary.prototype.eachGame = function(gameName, action){
+// EXPECTED "ACTION": function(name, data){}
+CraftSystemLibrary.prototype.eachGameByGameName = function(gameName, action){
 	//forEachIn(this.systems, action); 
 	// need to come up with a better way to loop through each system with a game name...
 	var gameSystems = this.lookupByGameName(gameName);
 	
 	for(var i = 0; i < gameSystems.length; i++){
 		action(gameSystems[i].cslName, gameSystems[i]);
+	}
+};
+
+// EXPECTED "ACTION": function(gameName, listOfSystems){}
+CraftSystemLibrary.prototype.eachGame = function(action){
+	for(var i = 0; i < this.listOfGames.length; i++){
+		//this.eachGameByGameName(this.listOfGames[i], action);
+		var gameName = this.listOfGames[i];
+		action(gameName, this.lookupByGameName(gameName));
 	}
 };
 
@@ -138,5 +149,6 @@ var CraftObj = function(parseData) {
 	this.gameCheckboxID = -1; // _gcb
 	this.systemCheckboxID= -1; // _cb
 	this.d3ClassName = -1; // radar_ D3 cannot select classes that start with a number...
+	this.visible = false;
 	
 };
